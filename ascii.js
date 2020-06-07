@@ -1,14 +1,19 @@
 var cnv,img;
 var resdiv;
-var options = [' ','`','.',',-',"':",';_~','"','*|','!l',
+    var options = [' ','`','.',',-',"':",';_~','"','*|','!l',
 '+=','>','<L','\\i','/^','1?','Jv','r','()cx','7}','sz',
 '3u','2Ckty{','jn','4FVY','5P[]af','qw','Sde','Eo',
 'NOZ','9HXgh','GTU','$AIm','QW','KM','%8','#06@','bp',
 'D','&','R','B'];
+var reversedOptions = options.slice().reverse();
 var len = options.length - 1;
 var gui,btn,livebtn;
 var live = false;
+var grayScale = false;
+var ascii = false;
 var filter = false;
+var reverse = false;
+var filterOptions = 0;
 var capture;
 var pg;
 
@@ -31,22 +36,29 @@ function setup() {
   filterbtn = createButton('CHANGE FILTER');
   filterbtn.parent(gui);
   filterbtn.style('display', 'none');
-  filterbtn.mousePressed(function(){options=options.reverse();});
+  filterbtn.mousePressed(function(){changeFilter(1);});
   cnv = createCanvas(240,120);
   background(255);
 }
 
 function draw() {
-  image(capture, 0, 0, width, height);
+  changeFilter(0);
   if (live) {
+    image(capture, 0, 0, width, height);
     cnv.style('position', 'fixed');
     cnv.style('top', '0');
     filterbtn.style('display', 'block');
-    calcCapture();
+   if (ascii) {
+       calcCapture(getOptions());
+   }
+   if (grayScale) {
+     toBlackAndWhite();
+     image(pg, 0, 0, width, height);
+   }
   }
 }
 
-function calcCapture() {
+function calcCapture(options) {
   pg.image(capture,0,0,240,120);
   var res = '<pre>';
   for (var i=0; i<60; i++) {
@@ -69,4 +81,48 @@ function calcCapture() {
   }
   res += '</pre>';
   resdiv.html(res);
+}
+
+function changeFilter(pase) {
+  let selection = (filterOptions + pase) % 3;
+  switch(selection) {
+    case 0:
+        grayScale = false;
+        reverse = false;
+        ascii = true;
+        break;
+    case 1:
+        reverse = true;
+        break;
+    case 2:
+        ascii = false;
+        reverse = false;
+        grayScale = true;
+        break;
+  }
+  filterOptions += pase;
+}
+
+ function toBlackAndWhite() {
+  pg.image(capture,0,0,240,120);
+  pg.loadPixels();
+  for (let i = 0; i < pg.width; i++) {
+    for (let j = 0; j < pg.height; j++) {
+      let pixel = pg.get(i,j);
+      let average = calculateAverageFromPixel(pixel);
+        pg.set(i, j, color(average, average, average));
+    }
+  }
+  pg.updatePixels();
+}
+
+function calculateAverageFromPixel(pixel) {
+   return pixel[0] + pixel[1] + pixel[2] / 3; 
+}
+
+function getOptions() {
+ if (reverse) {
+    return reversedOptions;
+ }
+ return options;
 }
