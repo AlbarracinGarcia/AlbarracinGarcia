@@ -10,12 +10,14 @@ var len = options.length - 1;
 var gui,btn,livebtn;
 var live = false;
 var grayScale = false;
+var sharpen = false;
 var ascii = false;
 var filter = false;
 var reverse = false;
 var filterOptions = 0;
 var capture;
 var pg;
+var matAscii = [];
 
 function setup() {
   //paragraph for display of ascii result
@@ -41,9 +43,56 @@ function setup() {
   background(255);
 }
 
+function calculoHist(img){
+  let hist = [];
+  for(let i = 0; i < 256; i++){
+     hist[i] = 0;
+  }
+ 
+  if(ascii){
+    for (let i = 0; i < matAscii.length; i++) {
+     
+      for (let j = 0; j < matAscii[0].length; j++) {
+        let bright = int(brightness(img.get(i, j)));
+      }
+  }
+  }
+ 
+  // Calculate the histogram
+  for (let i = 0; i < img.width; i++) {
+    for (let j = 0; j < img.height; j++) {
+      let bright = int(brightness(img.get(i, j)));
+      hist[bright] = hist[bright] +1;
+    }
+  }
+ 
+  return hist;
+}
+
+function histograma(){
+ 
+  let img = pg.get();
+ 
+  let hist = calculoHist(img);
+   
+    let histMax = max(hist);
+ 
+  stroke(255);
+  // Draw half of the histogram (skip every second value)
+  for (let i = 0; i < img.width; i += 2) {
+    // Map i (from 0..img.width) to a location in the histogram (0..255)
+    let which = int(map(i, 0, img.width, 0, 255));
+    // Convert the histogram value to a location between
+    // the bottom and the top of the picture
+    let y = int(map(hist[which], 0, histMax, img.height, 0));
+    line(i, img.height, i, y);
+  }
+}
+
 function draw() {
   changeFilter(0);
   if (live) {
+  document.getElementById("frameRate").innerHTML = frameRate();
     image(capture, 0, 0, width, height);
     cnv.style('position', 'fixed');
     cnv.style('top', '0');
@@ -53,12 +102,21 @@ function draw() {
    }
    if (grayScale) {
      toBlackAndWhite();
+     //toBlur();
      image(pg, 0, 0, width, height);
    }
+   if (sharpen) {
+     toSharpen();
+     image(pg, 0, 0, width, height);
+   }
+  }else{
+    histograma();
   }
+ 
 }
 
 function calcCapture(options) {
+  matAscii = [];
   pg.image(capture,0,0,240,120);
   var res = '<pre>';
   for (var i=0; i<60; i++) {
@@ -76,7 +134,8 @@ function calcCapture(options) {
       if (chr=='"') chr='&quot;';
       line += chr;
     }
-
+ 
+    matAscii.push(line);
     res += line+'<br>';
   }
   res += '</pre>';
@@ -84,11 +143,12 @@ function calcCapture(options) {
 }
 
 function changeFilter(pase) {
-  let selection = (filterOptions + pase) % 3;
+  let selection = (filterOptions + pase) % 4;
   switch(selection) {
     case 0:
         grayScale = false;
         reverse = false;
+        sharpen = false;
         ascii = true;
         break;
     case 1:
@@ -97,7 +157,14 @@ function changeFilter(pase) {
     case 2:
         ascii = false;
         reverse = false;
+        sharpen = false;
         grayScale = true;
+        break;
+    case 3:
+        ascii = false;
+        reverse = false;
+        grayScale = false;
+        sharpen = true;
         break;
   }
   filterOptions += pase;
@@ -117,7 +184,42 @@ function changeFilter(pase) {
 }
 
 function calculateAverageFromPixel(pixel) {
-   return pixel[0] + pixel[1] + pixel[2] / 3; 
+   return (pixel[0] + pixel[1] + pixel[2]) / 3;
+}
+
+function getSubMatrix(pg, i, j) {
+  let matrix = pg.get(i-1, j-1, 3, 3);
+  let array = [
+  calculateAverageFromPixel(matrix.get(0, 0)), calculateAverageFromPixel(matrix.get(1, 0)), calculateAverageFromPixel(matrix.get(2, 0)),
+  calculateAverageFromPixel(matrix.get(0, 1)), calculateAverageFromPixel(matrix.get(1, 1)), calculateAverageFromPixel(matrix.get(2, 1)),
+  calculateAverageFromPixel(matrix.get(0, 2)), calculateAverageFromPixel(matrix.get(1, 2)), calculateAverageFromPixel(matrix.get(2, 2))
+  ];
+  return array;
+}
+
+function toSharpen() {
+  image(pg, 0, 0, width, height);
+  pg.loadPixels();
+  for (let i = 1; i < pg.width - 1; i++){
+   for (let j = 1; j < pg.height - 1; j++) {
+      let matrixPixel = getSubMatrix(pg, i, j);
+      let filter = calculateBlurFromPixelMatrix(matrixPixel);
+      pg.set(i, j, color(filter, filter, filter));
+   }
+  }
+  pg.updatePixels();
+}
+
+function calculateBlurFromPixelMatrix(matrix) {                  
+let sharpenMatrix = [0, -1, 0,
+                    -1, 5, -1,
+                     0, -1, 0];
+
+ let sum = 0;
+ for (let i = 0; i < 9; i++) {
+   sum += matrix[i] * sharpenMatrix[i];
+ }
+   return sum;
 }
 
 function getOptions() {
