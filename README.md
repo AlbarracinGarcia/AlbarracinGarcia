@@ -16,11 +16,7 @@ Para la manipulación de imágenes y video por software, se aplicaron tres filtr
 
 #### Filtro ASCII
 
-Para el filtro ASCII se creó una variable
-
-```
-options
-```
+Para el filtro ASCII se creó una variable ``` options ``` que sirve para
 
 ### Manipulación de imágenes y video por hardware
 
