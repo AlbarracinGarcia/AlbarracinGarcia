@@ -16,7 +16,17 @@ Para la manipulación de imágenes y video por software, se aplicaron tres filtr
 
 #### Filtro ASCII
 
-Para el filtro ASCII se creó una variable ``` options ``` que sirve para
+Para el filtro ASCII se creó una variable ``` options ```, que almacena las cadenas de caracteres con las que será conformada la imagen o video input. para este filtro se usa la función ```draw```, que se encarga de seleccionar entre los filtros existentes. Para el caso del ASCII, se selecciona que sea verdadera la variable ```ascii``` (cabe señalar que para cada filtro existe una variable inicializada en ```false```, que se hará ```true``` cuando sea llamada y, por tanto, aplicada a la imagen), y esto llama a la siguiente función:
+```
+unction getOptions() {
+ if (reverse) {
+    return reversedOptions;
+ }
+ return options;
+}
+```
+la cual retorna 
+
 
 ### Manipulación de imágenes y video por hardware
 
