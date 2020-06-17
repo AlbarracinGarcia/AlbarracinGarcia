@@ -54,6 +54,16 @@ Para aplicar la convolución, se dispone de una matriz de convolución 3x3, la c
 
 ![Filtro blanco y negro](./imagenes/convolucion.png)
 
+
+
+## Histograma
+
+![Histograma](./imagenes/histograma.PNG)
+
+![Histograma Negro](./imagenes/histograma_negro.PNG)
+
+
+
 ### Manipulación de imágenes y video por hardware
 
 #### Filtro grayScale
