@@ -57,6 +57,7 @@ Para aplicar la convolución, se dispone de una matriz de convolución 3x3, la c
 
 
 ## Histograma
+A continuación se presentan los histogramas de las imágenes original y blanco y negro.  Se muestrean sobre la imagen que capta la cámara, la cual puede ser la imagen captada original o bajo el efecto de un filtro. Este histograma representa la distribución de grises presente en la imagen, yendo de más oscuro a más claro, y se imprime desde la posición cero de la imagen, hasta una porción de esta.
 
 ![Histograma](./imagenes/histograma.PNG)
 
@@ -66,13 +67,31 @@ Para aplicar la convolución, se dispone de una matriz de convolución 3x3, la c
 
 ### Manipulación de imágenes y video por hardware
 
+Los siguientes filtros fueron realizados utilizando shaders, que hacen uso del hardware del equipo para procesar las imágenes y los videos.
+
 #### Filtro grayScale
 
+Para hacer este filtro, se promedia cada pixel, se divide por tres y se le asigna en brillo el resultado dado a dicho pixel.
 
 ![Filtro blanco negro](./imagenes/blanco_negro_hardware.png)
 
 
 #### Filtro convolución
+
+Al igual que en la convolución con software, se utiliza una matriz de convolución, que en este caso se define en;
+```
+float sharpenFilter[9];
+  sharpenFilter[0] = 0.0;
+  sharpenFilter[1] = -1.0;
+  sharpenFilter[2] = 0.0;
+  sharpenFilter[3] = -1.0;
+  sharpenFilter[4] = 5.0;
+  sharpenFilter[5] = -1.0;
+  sharpenFilter[6] = 0.0;
+  sharpenFilter[7] = -1.0;
+  sharpenFilter[8] = 0.0;
+```
+acompañado de lo que permite acceder a la tarjeta gráfica, que son los vectores vec4. utilizados para archivos .frag, acompañados de los sampler2D y los vectores Varying.
 
 ![Filtro convolucion](./imagenes/convolucion_hardware.png)
 
@@ -81,7 +100,7 @@ Para aplicar la convolución, se dispone de una matriz de convolución 3x3, la c
 
 Se observa que el filtro de escala de grises utilizando software, se ejecuta a poco ms de 2 frames, mientras que el mismo utilizando hardware, se ejecuta a 59 frames. Algo no tan similar sucede con los filtros de convolución, donde el que utiliza hardware se ejecuta a 60 frames, pero el que utiliza software se ejecuta a 0.02 frames, lo cual lo hace inviable para hacer un video en vivo.
 
-En cuanto a la distribución de frecuencia de las escalaas de gris, representadas por el histograma que se ubica sobre las imágenes, 
+En cuanto a la distribución de frecuencia de las escalas de gris, representadas por el histograma que se ubica sobre las imágenes, se observa que a medida que la imagen tiene más colores claros, el histograma tiene mayor área sobre la parte derecha, y viceversa.
 
 A partir del informe, se concluye que los recursos de hardware incrementan en gran medida la manera en la que son procesadas las imágenes y los videos, pero asimismo los algoritmos que utiliza son más elaborados. Los temas de investigación que tiene este campo son variados y pueden explotarse con el equipo adecuado en materia de memoria y poder de procesamiento.
 
