@@ -18,19 +18,35 @@ Para la manipulación de imágenes y video por software, se aplicaron tres filtr
 
 Para el filtro ASCII se creó una variable ``` options ```, que almacena las cadenas de caracteres con las que será conformada la imagen o video input. para este filtro se usa la función ```draw```, que se encarga de seleccionar entre los filtros existentes. Para el caso del ASCII, se selecciona que sea verdadera la variable ```ascii``` (cabe señalar que para cada filtro existe una variable inicializada en ```false```, que se hará ```true``` cuando sea llamada y, por tanto, aplicada a la imagen), y esto llama a la siguiente función:
 ```
-unction getOptions() {
+function getOptions() {
  if (reverse) {
     return reversedOptions;
  }
  return options;
 }
 ```
-la cual retorna 
+la cual retorna la variable options en caso de que se requiera una imagen ASCII con caracteres oscuros pasa espacios oscuros;¿por qué se dice esto? Porque también se hizo un filtro que se basa en la variable ```options``` pero reversada, para hacer los espacios oscuros de la imagen como espacios claros en el ASCII, y los espacios claros de la imagen como espacios oscuros.
+
+#### Filtro grayScale
+
+Este filtro, como su nombre lo dice, convierte una imagen en escala de grises. Este proceso se hace mediante el promedio RGB de cada pixel, traducido a un nivel de brillo en el cual el valor 0 es el negro, y el valor 255 es el más claro; así, pues, un color fuerte representará un gris claro en la imagen transformada, y un color débil u oscuro, representará un gris ms oscuro en la imagen transformada. Todo esto se hace utilizando la función ```toBlackAndWhite()```.
+
+#### Filtro convolución
+
+Para aplicar la convolución, se dispone de una matriz de convolución 3x3, la cual, realizando un cálculo de producto punto con la sub-imagen (una porción de la imagen original compuesta por una matriz de brillo de pixeles 3x3), le aplica diferentes filtros a la imagen original. En este caso, se utilizó el filtro Sharpen, compuesto por una matriz de convolución [[0,-1,0],[-1,5,-1],[0,-1,0]] distorsiona la imagen original con un particular filtro.
 
 
 ### Manipulación de imágenes y video por hardware
 
+
+
 ## Resultados y conclusiones
+
+Se observa que el filtro de escala de grises utilizando software, se ejecuta a poco ms de 2 frames, mientras que el mismo utilizando hardware, se ejecuta a 59 frames. Algo no tan similar sucede con los filtros de convolución, donde el que utiliza hardware se ejecuta a 60 frames, pero el que utiliza software se ejecuta a 0.02 frames, lo cual lo hace inviable para hacer un video en vivo.
+
+En cuanto a la distribución de frecuencia de las escalaas de gris, representadas por el histograma que se ubica sobre las imágenes, 
+
+A partir del informe, se concluye que los recursos de hardware incrementan en gran medida la manera en la que son procesadas las imágenes y los videos, pero asimismo los algoritmos que utiliza son más elaborados. Los temas de investigación que tiene este campo son variados y pueden explotarse con el equipo adecuado en materia de memoria y poder de procesamiento.
 
 ## Trabajo de indagación futuro
 
