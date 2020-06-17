@@ -9,9 +9,6 @@ layout: default
 [Ejercicio transormación por Hardware](https://dog-gabby-hyssop.glitch.me/).
 
 
-# AlbarracinGarcia
-Taller 1 Computación Visual Giovanny Albarracín y Germán García
-
 
 ## Motivación y objetivo
 
